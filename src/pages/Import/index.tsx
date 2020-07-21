@@ -23,19 +23,35 @@ const Import: React.FC = () => {
   const history = useHistory();
 
   async function handleUpload(): Promise<void> {
-    // const data = new FormData();
 
-    // TODO
+    const data = new FormData();
+
+    if(!uploadedFiles.length) return;
+
+    const file = uploadedFiles[0]; //pq sabemos que é só um
+
+    //para enviar à api, precisamos passar o nome file, que é o que a api recebe, ai enviamos o arquivo (file.file) e o nome do arquivo (file.name). ESse é o padrao do formData para files -> nome para api, o arquivo e o nome do arquivo.
+    data.append('file', file.file);
 
     try {
-      // await api.post('/transactions/import', data);
+      await api.post('/transactions/import', data);
+
+      history.push("/");
     } catch (err) {
-      // console.log(err.response.error);
+      console.log(err.response.error);
     }
   }
 
   function submitFile(files: File[]): void {
-    // TODO
+    //para formatar o valor recebido via csv
+    const uploadFiles = files.map(file => ({
+      file,
+      name: file.name,
+      readableSize: filesize(file.size),
+    }));
+
+    //para mostrar os dados do arquivo adicionado FileList component.
+    setUploadedFiles(uploadFiles);
   }
 
   return (
